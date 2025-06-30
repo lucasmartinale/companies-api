@@ -23,8 +23,10 @@ API developed with NestJS to manage companies and their transfers. It includes S
 
 ## Instructions to run the project
 
-### Project setup
+### Configure environment variables
+To start quickly you can rename the `.env.template` file to `.env`
 
+### Install dependencies
 ```bash
 $ npm install
 ```
@@ -63,11 +65,11 @@ $ npm run test
 ```
 
 ## Desiciones técnicas
-- Decidí crear joined_at y created_at en la tabla companies porque considero que puede existir la situación en la que se quieran registrar empresas con fechas anteriores de adhesión (por ejemplo por migración) 
-- Decidí crear created_at y transfered_at en la tabla transfer porque considero que la transferencia puede ocurrir en un momento distinto a la creación del registro. Si es siempre la misma podríamos no utilizar created_at 
-- Utilice uuids en los campos de id para que si el sistema fuera distribuido en un futuro no colisionen los id
-- Cree un índice para transferredAt en la tabla transfers optimizar las consultas de las empresas que realizaron transferencias el ultimo mes 
-- Cree un índice para joinedAt en la tabla companies para optimizar las consultas para obtener las empresas que se adhirieron en el ultimo mes
+- Decidí crear `joined_at` y `created_at` en la tabla companies porque considero que puede existir la situación en la que se quieran registrar empresas con fechas anteriores de adhesión (por ejemplo por migración) 
+- Decidí crear `created_at` y `transfered_at` en la tabla transfer porque considero que la transferencia puede ocurrir en un momento distinto a la creación del registro. Si es siempre la misma podríamos no utilizar `created_at`
+- Utilice uuids en los campos de `id` para que si el sistema fuera distribuido en un futuro no colisionen los id
+- Cree un índice para `transferredAt` en la tabla transfers optimizar las consultas de las empresas que realizaron transferencias el ultimo mes 
+- Cree un índice para `joinedAt` en la tabla companies para optimizar las consultas para obtener las empresas que se adhirieron en el ultimo mes
 - Integré Swagger para documentar todos los endpoints de la API (no estaba en las consignas)
 - En cuanto a los tests, como la consigna decia unitarios realice tests de los casos de uso y del controller. El controller no suelo testearlo porque suelo realizar al menos un test e2e del happy path que ya cubre la integracion del controller con los casos de uso y valida que funcione de punta a punta. 
 
