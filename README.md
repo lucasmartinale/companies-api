@@ -1,98 +1,222 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 ## Description
+API developed with NestJS to manage companies and their transfers. It includes Swagger documentation, a relational database (SQLite for this local implementation), automated testing, and a decoupled design based on Hexagonal Architecture principles.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Project setup
+<div align="left">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nestjs/nestjs-original.svg" height="40" alt="nestjs logo"  />
+  <img width="12" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" height="40" alt="nodejs logo"  />
+  <img width="12" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jest/jest-plain.svg" height="40" alt="jest logo"  />
+  <img width="12" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sqlite/sqlite-original.svg" height="40" alt="sqlite logo"  />
+  <img width="12" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/eslint/eslint-original.svg" height="40" alt="eslint logo"  />
+  <img width="12" />
+  <img src="https://skillicons.dev/icons?i=aws" height="40" alt="amazonwebservices logo"  />
+</div>
 
+## Requirements
+- Node.js version 22.0.0 or higher
+
+
+## Instructions to run the project
+
+### Configure environment variables
+To start quickly you can rename the `.env.template` file to `.env`
+
+### Install dependencies
 ```bash
 $ npm install
 ```
 
-## Compile and run the project
+### Seed the Database
+
+To populate the database with demo data (companies and transfers), a development-only seed endpoint is available.
+
+> This endpoint only works when `NODE_ENV=development`.
+
+### Steps
+
+1. Make sure the project is running in development mode:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
 $ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
+2. Send a POST request to the following endpoint (with a empty body):
+```bash
+POST http://localhost:3000/seed
+```
+
+Now you can test the project
+
+## Swagger docs
+The Swagger UI is available at:
+http://localhost:3000/api/docs
+
+
 
 ## Run tests
 
 ```bash
 # unit tests
 $ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
 ```
 
-## Deployment
+## Desiciones técnicas
+- Decidí crear `joined_at` y `created_at` en la tabla companies porque considero que puede existir la situación en la que se quieran registrar empresas con fechas anteriores de adhesión (por ejemplo por migración) 
+- Decidí crear `created_at` y `transfered_at` en la tabla transfer porque considero que la transferencia puede ocurrir en un momento distinto a la creación del registro. Si es siempre la misma podríamos no utilizar `created_at`
+- Utilice uuids en los campos de `id` para que si el sistema fuera distribuido en un futuro no colisionen los id
+- Cree un índice para `transferredAt` en la tabla transfers optimizar las consultas de las empresas que realizaron transferencias el ultimo mes 
+- Cree un índice para `joinedAt` en la tabla companies para optimizar las consultas para obtener las empresas que se adhirieron en el ultimo mes
+- Integré Swagger para documentar todos los endpoints de la API (no estaba en las consignas)
+- En cuanto a los tests, como la consigna decia unitarios realice tests de los casos de uso y del controller. El controller no suelo testearlo porque suelo realizar al menos un test e2e del happy path que ya cubre la integracion del controller con los casos de uso y valida que funcione de punta a punta. 
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+# Lamda challenge
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Código de Lambda
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+```ts
+import { APIGatewayProxyHandler } from 'aws-lambda';
+import { Client } from 'pg';
+import { v4 as uuidv4 } from 'uuid';
+
+enum CompanyTypeEnum {
+  PYME = 'pyme',
+  CORPORATE = 'corporate',
+}
+
+interface CompanyInput {
+  cuit: string;
+  name: string;
+  type: CompanyTypeEnum;
+}
+
+interface CompanyResponse {
+  id: string;
+  cuit: string;
+  name: string;
+  type: CompanyTypeEnum;
+}
+
+const validateInput = (data: any): string | null => {
+  if (!data.cuit || typeof data.cuit !== 'string') {
+    return 'CUIT is required and must be a string';
+  }
+  if (!/^\d{11}$/.test(data.cuit)) {
+    return 'CUIT must be exactly 11 digits with no dashes';
+  }
+
+  if (!data.name || typeof data.name !== 'string') {
+    return 'Name is required and must be a string';
+  }
+
+  if (!data.type || typeof data.type !== 'string') {
+    return 'Type is required and must be a string';
+  }
+  if (!Object.values(CompanyTypeEnum).includes(data.type)) {
+    return `Type must be a valid Company Type: ${Object.values(CompanyTypeEnum).join(', ')}`;
+  }
+
+  return null;
+};
+
+export const handler: APIGatewayProxyHandler = async (event) => {
+  if (!event.body) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: 'Missing request body' }),
+    };
+  }
+
+  let data: CompanyInput;
+  try {
+    data = JSON.parse(event.body);
+  } catch {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: 'Invalid JSON' }),
+    };
+  }
+
+  const errorMessage = validateInput(data);
+  if (errorMessage) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: errorMessage }),
+    };
+  }
+
+  const client = new Client({
+    host: process.env.PG_HOST,
+    port: Number(process.env.PG_PORT || 5432),
+    user: process.env.PG_USER,
+    password: process.env.PG_PASSWORD,
+    database: process.env.PG_DATABASE,
+  });
+
+  try {
+    await client.connect();
+
+    const id = uuidv4();
+
+    const query = `
+      INSERT INTO companies (id, cuit, name, type)
+      VALUES ($1, $2, $3, $4)
+      RETURNING id, cuit, name, type
+    `;
+
+    const values = [id, data.cuit, data.name, data.type];
+
+    const res = await client.query(query, values);
+
+    await client.end();
+
+    const insertedCompany: CompanyResponse = res.rows[0];
+
+    return {
+      statusCode: 201,
+      body: JSON.stringify(insertedCompany),
+    };
+  } catch (error) {
+    console.error('DB Error:', error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message: 'Database error' }),
+    };
+  }
+};
+
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Input
 
-## Resources
+```json
+{
+  "cuit": "20123456789",
+  "name": "Empresa Test",
+  "type": "pyme"
+}
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+### Output
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```json
+{
+  "id": "4f721a1b-4cc2-4468-9f45-9ab7be9cb38d",
+  "cuit": "20123456789",
+  "name": "Empresa Test",
+  "type": "pyme"
+}
+```
 
-## Support
+### Breve explicación de cómo la integrarías con el sistema
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Antes que nada lo que haría seria  implementar la base de datos en RDS o DynamoDB en la que ejecutaria las migraciones de la API creada anteriormente. Como en este caso los adaptadores estan hechos para SQLite tendria que cambiar el tipo de base de datos y hacer adaptadores para la base de datos que corresponda (lo que no seria complicado por la arquitectura desacoplada del proyecto). 
 
-## Stay in touch
+Implementaría la funcionalidad de adherir empresa por fuera de la API, creando un lamda function que realice la misma logica de validacion que realice en la API y que si es valida inserte el registro en la tabla de companies. 
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Ademas haria que el trigger que lo dispara sea una llamada http mediante que entre por API Gateway.
 
-## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
